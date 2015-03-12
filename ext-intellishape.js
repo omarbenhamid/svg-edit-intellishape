@@ -77,8 +77,8 @@ svgEditor.addExtension("Intellishape", function() {
     	    var circleAspectRatio = 0.8;
     	    switch(shape){
     	        case "circle":
-    	            /*var aspect = (bbox.maxx - bbox.minx)/(bbox.maxy - bbox.miny);
-    	            if((1-Math.abs(aspect-1)) >= circleAspectRatio) {*/
+    	            var aspect = (bbox.maxx - bbox.minx)/(bbox.maxy - bbox.miny);
+    	            if((1-Math.abs(aspect-1)) >= circleAspectRatio) {
     	            
         	            return svgCanvas.addSvgElementFromJson({
         					element: 'circle',
@@ -91,6 +91,20 @@ svgEditor.addExtension("Intellishape", function() {
         						opacity: 1
         					}
         				});
+    	            }else{
+    	                return svgCanvas.addSvgElementFromJson({
+        					element: 'ellipse',
+        					curStyles: true,
+        					attr: {
+        						id: svgCanvas.getId(),
+        						cx:(bbox.minx + bbox.maxx)/2,
+        						cy:(bbox.miny + bbox.maxy)/2,
+        						rx:(bbox.maxx - bbox.minx),
+        						ry:(bbox.maxy - bbox.miny),
+        						opacity: 1
+        					}
+        				});
+    	            }
     	            
     				break;
     			default:
