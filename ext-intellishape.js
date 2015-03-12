@@ -1,5 +1,11 @@
+//Load unistroke
+var fileref=document.createElement('script')
+fileref.setAttribute("type","text/javascript")
+fileref.setAttribute("src", svgEditor.curConfig.extPath + 'unistroke.js')
+document.getElementsByTagName("head")[0].appendChild(fileref)
 
 svgEditor.addExtension("Intellishape", function() {
+        
         var freehand = {
 			minx: null,
 			miny: null,
@@ -20,9 +26,16 @@ svgEditor.addExtension("Intellishape", function() {
 		var d_attr;
 		var shape;
 		var started=true;
+		
+		
+        //Instanciate recognizer
+        var recognizer;
+        var points;
+        var useProtractor = false;
         
+    		
         var getBsplinePoint = function(t) {
-    		var spline = {x:0, y:0},
+            var spline = {x:0, y:0},
     			p0 = controllPoint2,
     			p1 = controllPoint1,
     			p2 = start,
@@ -91,7 +104,7 @@ svgEditor.addExtension("Intellishape", function() {
 					// Get the actual coordinate by dividing by the zoom value
 					var real_x = opts.start_x / zoom;
 					var real_y = opts.start_y / zoom;
-					console.log(real_x,real_y,opts);
+					points = [new Point(real_x,real_y)];
 					
     				// Check the mode on mousedown
     				
@@ -140,11 +153,15 @@ svgEditor.addExtension("Intellishape", function() {
 					var real_x = opts.mouse_x / zoom;
 					var real_y = opts.mouse_y / zoom;
 					
+    				points.push(new Point(real_x,real_y));
+        			
         			freehand.minx = Math.min(real_x, freehand.minx);
     				freehand.maxx = Math.max(real_x, freehand.maxx);
     				freehand.miny = Math.min(real_y, freehand.miny);
     				freehand.maxy = Math.max(real_y, freehand.maxy);
     				end.x = real_x; end.y = real_y;
+    				
+    				
     				if (controllPoint2.x && controllPoint2.y) {
     					for (i = 0; i < STEP_COUNT - 1; i++) {
     						parameter = i / STEP_COUNT;
@@ -167,23 +184,16 @@ svgEditor.addExtension("Intellishape", function() {
     			mouseUp: function(opts) {
     				// Check the mode on mouseup
     				if(svgCanvas.getMode() != "intellishape") return;
-    				/*if ((freehand.maxx - freehand.minx) > 0 &&
-					(freehand.maxy - freehand.miny) > 0) {
-    					element = addSvgElementFromJson({
-    						element: 'ellipse',
-    						curStyles: true,
-    						attr: {
-    							cx: (freehand.minx + freehand.maxx) / 2,
-    							cy: (freehand.miny + freehand.maxy) / 2,
-    							rx: (freehand.maxx - freehand.minx) / 2,
-    							ry: (freehand.maxy - freehand.miny) / 2,
-    							id: getId()
-    						}
-    					});
-    					call('changed',[element]);
-    					keep = true;
-    				}*/
-					$.alert("Ellipse!"+STEP_COUNT+" s "+sumDistance+" id "+svgCanvas.getId());
+    				if (points.length >= 10)
+    				{
+    				    if(recognizer === undefined) recognizer = new DollarRecognizer();
+    					var result = recognizer.Recognize(points, useProtractor);
+    					console.log("Recognitized",result);
+    				}
+    				else // fewer than 10 points were inputted
+    				{
+    					$.alert("Too few points made. Please try again.");
+    				}
 			    }
         };
 });
