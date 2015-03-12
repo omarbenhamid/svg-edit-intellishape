@@ -5,6 +5,10 @@ fileref.setAttribute("src", svgEditor.curConfig.extPath + 'unistroke.js')
 document.getElementsByTagName("head")[0].appendChild(fileref)
 
 svgEditor.addExtension("Intellishape", function() {
+    
+        var useProtractor = false;
+        var minGestureScore = 0.8;
+        
         
         var freehand = {
 			minx: null,
@@ -31,7 +35,6 @@ svgEditor.addExtension("Intellishape", function() {
         //Instanciate recognizer
         var recognizer;
         var points;
-        var useProtractor = false;
         
     		
         var getBsplinePoint = function(t) {
@@ -69,6 +72,35 @@ svgEditor.addExtension("Intellishape", function() {
     			y:spline.y
     		};
     	};
+    	
+    	function renderRecognitionResult(shape,points,bbox) {
+    	    var circleAspectRatio = 0.8;
+    	    switch(shape){
+    	        case "circle":
+    	            /*var aspect = (bbox.maxx - bbox.minx)/(bbox.maxy - bbox.miny);
+    	            if((1-Math.abs(aspect-1)) >= circleAspectRatio) {*/
+    	            
+        	            return svgCanvas.addSvgElementFromJson({
+        					element: 'circle',
+        					curStyles: true,
+        					attr: {
+        						id: svgCanvas.getId(),
+        						cx:(bbox.minx + bbox.maxx)/2,
+        						cy:(bbox.miny + bbox.maxy)/2,
+        						r:(bbox.maxx - bbox.minx)/2,
+        						opacity: 1
+        					}
+        				});
+    	            
+    				break;
+    			default:
+    			    message("I don't know how to render "+shape);
+    	    }
+    	}
+    	
+    	function message(msg){
+    	    $.alert(msg);
+    	}
         
         return {
                 svgicons: svgEditor.curConfig.extPath + "intellishape-icon.xml",
@@ -189,10 +221,22 @@ svgEditor.addExtension("Intellishape", function() {
     				    if(recognizer === undefined) recognizer = new DollarRecognizer();
     					var result = recognizer.Recognize(points, useProtractor);
     					console.log("Recognitized",result);
+    					if(result.Score < minGestureScore) {
+    					    //FIXME suggest shape ?
+    					    message("Not recognized");
+    					}else{
+    					    var elem = renderRecognitionResult(result.Name,points,freehand);
+    					    if(elem) {
+        					    return {
+        					        keep: true
+        					    }
+    					    }
+    					}
+    					
     				}
     				else // fewer than 10 points were inputted
     				{
-    					$.alert("Too few points made. Please try again.");
+    					message("Too few points made. Please try again.");
     				}
 			    }
         };
