@@ -121,6 +121,17 @@ svgEditor.addExtension("Intellishape", function() {
     					}
     				});
     				break;
+    			case "triangle":
+    				return svgCanvas.addSvgElementFromJson({
+    					element: 'polygon',
+    					curStyles: true,
+    					attr: {
+    						id: svgCanvas.getId(),
+    						points:((bbox.minx+bbox.maxx)/2)+","+bbox.miny + " "+bbox.minx+","+bbox.maxy+" "+bbox.maxx+","+bbox.maxy,
+    						opacity: 1
+    					}
+    				});
+    				break;
     			default:
     			    message("I don't know how to render "+shape);
     	    }
