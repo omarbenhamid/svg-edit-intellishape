@@ -132,7 +132,7 @@ svgEditor.addExtension("Intellishape", function() {
 				
     				// Events
     				events: {
-    					'click': function() {
+    					'mouseup': function() {
     						// The action taken when the button is clicked on.
     						// For "mode" buttons, any other button will 
     						// automatically be de-pressed.
