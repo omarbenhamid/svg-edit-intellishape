@@ -107,6 +107,20 @@ svgEditor.addExtension("Intellishape", function() {
     	            }
     	            
     				break;
+    			case "rectangle":
+    				return svgCanvas.addSvgElementFromJson({
+    					element: 'rect',
+    					curStyles: true,
+    					attr: {
+    						id: svgCanvas.getId(),
+    						x:bbox.minx,
+    						y:bbox.miny,
+    						width:(bbox.maxx - bbox.minx),
+    						height:(bbox.maxy - bbox.miny),
+    						opacity: 1
+    					}
+    				});
+    				break;
     			default:
     			    message("I don't know how to render "+shape);
     	    }
