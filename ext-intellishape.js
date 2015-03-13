@@ -99,8 +99,8 @@ svgEditor.addExtension("Intellishape", function() {
         						id: svgCanvas.getId(),
         						cx:(bbox.minx + bbox.maxx)/2,
         						cy:(bbox.miny + bbox.maxy)/2,
-        						rx:(bbox.maxx - bbox.minx),
-        						ry:(bbox.maxy - bbox.miny),
+        						rx:(bbox.maxx - bbox.minx)/2,
+        						ry:(bbox.maxy - bbox.miny)/2,
         						opacity: 1
         					}
         				});
